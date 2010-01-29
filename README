@@ -1,0 +1,6 @@
+Simple Ruby script to move files from one location to another based
+on a defined set of rules in config.yml.
+
+Look for NOTE: entries for things to change.
+
+Ash McKenzie (ash@ashmckenzie.org)

@@ -14,26 +14,23 @@ require 'fileutils'
 config = YAML.load_file('config.yml')
 
 src_dir = config['look']['dir']
-dir = Dir.new(src_dir)
 regex = Regexp.new(config['look']['regex'], Regexp::IGNORECASE)
-
-files = []
 
 puts "- Looking for files to move in #{src_dir}"
 
-dir.each do |entry|
+files = []
+
+Dir["#{src_dir}/**/*"].each do |entry|
   if regex.match(entry)
     files << entry
   end
 end
 
-dir.close
-
 files.each do |file|
   config['mappings'].each do |mapping|
     dir = mapping['dir']
     regex = Regexp.new(mapping['regex'], Regexp::IGNORECASE)
-    if m = r.match(file)
+    if m = regex.match(file)
       dest_dir = "#{dir}/Season #{m[1].to_i}/"    # NOTE: Change this to suit
       puts "- Attempting to move #{file} to #{dest_dir}"
       Dir.mkdir(dest_dir) unless File.directory?(dest_dir)
