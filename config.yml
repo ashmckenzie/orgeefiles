@@ -1,0 +1,8 @@
+look:
+  dir: /tmp/source_dir
+  regex: ^.+\.mp3$
+mappings:
+  - man_vs_wild:
+    label: "All Pearl Jam music"
+    regex: ^pearl\.jam.\+\.mp3$
+    dir: "/storage/Pearl Jam"
