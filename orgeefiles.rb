@@ -34,7 +34,7 @@ files.each do |file|
       dest_dir = "#{dir}/Season #{m[1].to_i}/"    # NOTE: Change this to suit
       puts "- Attempting to move #{file} to #{dest_dir}"
       Dir.mkdir(dest_dir) unless File.directory?(dest_dir)
-      FileUtils.mv("#{src_dir}/#{file}", "#{dest_dir}/#{file}")
+      FileUtils.mv("#{file}", "#{dest_dir}/")
     end
   end
 end
