@@ -10,6 +10,12 @@
 require 'rubygems'
 require 'yaml'
 require 'fileutils'
+require 'optiflag'
+
+module Orgeefiles extend OptiFlagSet
+  optional_switch_flag "forreal"
+  and_process!
+end 
 
 config = YAML.load_file('config.yml')
 
@@ -33,8 +39,10 @@ files.each do |file|
     if m = regex.match(file)
       dest_dir = "#{dir}/Season #{m[1].to_i}/"    # NOTE: Change this to suit
       puts "- Attempting to move #{file} to #{dest_dir}"
-      Dir.mkdir(dest_dir) unless File.directory?(dest_dir)
-      FileUtils.mv("#{file}", "#{dest_dir}/")
+      if ARGV.flags.forreal
+        Dir.mkdir(dest_dir) unless File.directory?(dest_dir)
+        FileUtils.mv("#{file}", "#{dest_dir}/")
+      end
     end
   end
 end
