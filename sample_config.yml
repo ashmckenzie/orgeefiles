@@ -1,6 +1,8 @@
-look:
-  dir: /tmp/source_dir
+source:
+  dir: "/tmp/source_dir"
   regex: ^.+\.mp3$
+destination:
+  dir: "#{dir}"
 mappings:
   - pearl_jam:
     label: "All Pearl Jam music"
