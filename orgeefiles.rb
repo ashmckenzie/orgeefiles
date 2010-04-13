@@ -27,7 +27,7 @@ module Orgeefiles extend OptiFlagSet
       @config = YAML.load_file('config.yml')
 
       unless File.directory?(@config['source']['dir'])
-        raise "ERROR: '#{src_dir}' does not exist."
+        raise "ERROR: '#{@config['source']['dir']}' does not exist."
       end
     end
 
