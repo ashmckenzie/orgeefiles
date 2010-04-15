@@ -22,6 +22,7 @@ module Orgeefiles extend OptiFlagSet
 
     @config = nil
     @files = nil
+    @default_dest_dir = nil
 
     def initialize
       @config = YAML.load_file('config.yml')
@@ -42,7 +43,7 @@ module Orgeefiles extend OptiFlagSet
       @files = []
       src_dir = @config['source']['dir']
       regex = Regexp.new(@config['source']['regex'], Regexp::IGNORECASE)
-      default_dest_dir = @config['destination']['dir']
+      @default_dest_dir = @config['destination']['dir']
 
       puts "- Looking for files to move from #{src_dir}"
 
@@ -67,7 +68,7 @@ module Orgeefiles extend OptiFlagSet
             if mapping['dest_dir']
               dest_dir = eval '"' + mapping['dest_dir'] + '"'
             else
-              dest_dir = default_dest_dir
+              dest_dir = eval '"' + @default_dest_dir + '"'
             end
 
             if ARGV.flags.forreal
