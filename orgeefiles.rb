@@ -8,6 +8,7 @@
 # Look for NOTE: entries for things to change.
 
 require 'rubygems'
+require 'logger'
 require 'yaml'
 require 'fileutils'
 require 'optiflag'
@@ -16,19 +17,29 @@ require 'zlib'
 module Orgeefiles extend OptiFlagSet
 
   optional_switch_flag "forreal"
+  optional_switch_flag "debug"
   and_process!
 
   class Orgeefiles
 
+    @log = nil
     @config = nil
     @files = nil
     @default_dest_dir = nil
 
     def initialize
+      @log = Logger.new(STDOUT)
+
+      if ARGV.flags.debug
+        @log.level = Logger::DEBUG
+      else
+        @log.level = Logger::INFO
+      end
+
       @config = YAML.load_file('config.yml')
 
       unless File.directory?(@config['source']['dir'])
-        raise "ERROR: '#{@config['source']['dir']}' does not exist."
+        raise "'#{@config['source']['dir']}' does not exist."
       end
     end
 
@@ -45,10 +56,11 @@ module Orgeefiles extend OptiFlagSet
       regex = Regexp.new(@config['source']['regex'], Regexp::IGNORECASE)
       @default_dest_dir = @config['destination']['dir']
 
-      puts "- Looking for files to move from #{src_dir}"
+      @log.info "Looking for files to move from #{src_dir}"
 
       Dir["#{src_dir}/**/*"].each do |entry|
         if regex.match(entry)
+          @log.debug "Found #{entry}"
           @files << entry
         end
       end
@@ -72,10 +84,10 @@ module Orgeefiles extend OptiFlagSet
             end
 
             if ARGV.flags.forreal
-              puts "+ Moving #{src_file} to #{dest_dir}"
+              @log.info "Moving #{src_file} to #{dest_dir}"
               self.move_file(src_file, dest_dir)
             else
-              puts "+ Would have moved #{src_file} to #{dest_dir}"
+              @log.info "Would have moved #{src_file} to #{dest_dir}"
             end
 
           end
@@ -88,18 +100,18 @@ module Orgeefiles extend OptiFlagSet
       Dir.mkdir(dest_dir) unless File.directory?(dest_dir)
       FileUtils.cp("#{src_file}", "#{dest_dir}/")
 
-      puts "+ Calculating checksum for #{src_file}"
+      @log.info "Calculating checksum for #{src_file}"
       src_checksum = self.crc32(src_file)
 
       dest_file = "#{dest_dir}/#{File.basename(src_file)}"
-      puts "+ Calculating checksum for #{dest_file}"
+      @log.info "Calculating checksum for #{dest_file}"
       dest_checksum = self.crc32(dest_file)
 
       if dest_checksum == src_checksum
-        puts "+ Checksums match, removing #{src_file}"
+        @log.info "Checksums match, removing #{src_file}"
         File.delete("#{src_file}")
       else
-        raise "ERROR: MD5's don't match for '#{src_file}' (src=[#{src_checksum}], dest=[#{dest_checksum}])"
+        raise "MD5's don't match for '#{src_file}' (src=[#{src_checksum}], dest=[#{dest_checksum}])"
       end
 
     end
