@@ -18,6 +18,7 @@ module Orgeefiles extend OptiFlagSet
 
   optional_switch_flag "forreal"
   optional_switch_flag "debug"
+  optional_switch_flag "quiet"
   and_process!
 
   class Orgeefiles
@@ -32,6 +33,8 @@ module Orgeefiles extend OptiFlagSet
 
       if ARGV.flags.debug
         @log.level = Logger::DEBUG
+      elsif ARGV.flags.quiet
+        @log.level = Logger::ERROR
       else
         @log.level = Logger::INFO
       end
@@ -113,6 +116,9 @@ module Orgeefiles extend OptiFlagSet
       else
         raise "MD5's don't match for '#{src_file}' (src=[#{src_checksum}], dest=[#{dest_checksum}])"
       end
+
+      src_checksum = nil
+      dest_checksum = nil
 
     end
 
