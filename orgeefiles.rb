@@ -12,7 +12,6 @@ require 'logger'
 require 'yaml'
 require 'fileutils'
 require 'optiflag'
-require 'zlib'
 
 module Orgeefiles extend OptiFlagSet
 
@@ -104,11 +103,11 @@ module Orgeefiles extend OptiFlagSet
       FileUtils.cp("#{src_file}", "#{dest_dir}/")
 
       @log.info "Calculating checksum for #{src_file}"
-      src_checksum = self.crc32(src_file)
+      src_checksum = self.calculate_checksum(src_file)
 
       dest_file = "#{dest_dir}/#{File.basename(src_file)}"
       @log.info "Calculating checksum for #{dest_file}"
-      dest_checksum = self.crc32(dest_file)
+      dest_checksum = self.calculate_checksum(dest_file)
 
       if dest_checksum == src_checksum
         @log.info "Checksums match, removing #{src_file}"
@@ -122,8 +121,11 @@ module Orgeefiles extend OptiFlagSet
 
     end
 
-    def crc32(file)
-      return Zlib::crc32(self.read_file(file))
+    def calculate_checksum(file)
+      checksum = `md5sum "#{file}" | awk '{ print $1 }'`
+      checksum.strip!
+      @log.debug "Checksum for #{file} - #{checksum}"
+      return checksum
     end
 
     def read_file(file)
