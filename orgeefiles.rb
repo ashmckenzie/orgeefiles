@@ -12,6 +12,7 @@ require 'logger'
 require 'yaml'
 require 'fileutils'
 require 'optiflag'
+require 'escape'
 
 module Orgeefiles extend OptiFlagSet
 
@@ -85,9 +86,11 @@ module Orgeefiles extend OptiFlagSet
               dest_dir = eval '"' + @default_dest_dir + '"'
             end
 
+            dest_dir.chop!
+
             if ARGV.flags.forreal
-              @log.info "Moving #{src_file} to #{dest_dir}"
-              self.move_file(src_file, dest_dir)
+              @log.info "Copying #{src_file} to #{dest_dir}"
+              self.move_file(src_file, "#{dest_dir}/")
             else
               @log.info "Would have moved #{src_file} to #{dest_dir}"
             end
@@ -98,9 +101,13 @@ module Orgeefiles extend OptiFlagSet
     end
 
     def move_file(src_file, dest_dir)
+
       raise "Directory '#{dest_dir}' does not exist" unless File.directory?(File.dirname(dest_dir))
+
       Dir.mkdir(dest_dir) unless File.directory?(dest_dir)
-      FileUtils.cp("#{src_file}", "#{dest_dir}/")
+
+      #FileUtils.cp("#{src_file}", "#{dest_dir}/")
+      system(Escape.shell_command(["/usr/bin/env", "rsync", "-ax", "#{src_file}", "#{dest_dir}/"]))
 
       @log.info "Calculating checksum for #{src_file}"
       src_checksum = self.calculate_checksum(src_file)
