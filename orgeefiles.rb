@@ -59,7 +59,7 @@ module Orgeefiles extend OptiFlagSet
       regex = Regexp.new(@config['source']['regex'], Regexp::IGNORECASE)
       @default_dest_dir = @config['destination']['dir']
 
-      @log.info "Looking for files to move from #{src_dir}"
+      @log.debug "Looking for files to move from #{src_dir}"
 
       Dir["#{src_dir}/**/*"].each do |entry|
         if regex.match(entry)
@@ -89,10 +89,10 @@ module Orgeefiles extend OptiFlagSet
             dest_dir.chop!
 
             if ARGV.flags.forreal
-              @log.info "Copying #{src_file} to #{dest_dir}"
+              @log.info "Rsync'ing #{src_file} to #{dest_dir}"
               self.move_file(src_file, "#{dest_dir}/")
             else
-              @log.info "Would have moved #{src_file} to #{dest_dir}"
+              @log.info "Would have rsync'd #{src_file} to #{dest_dir}"
             end
 
           end
@@ -101,49 +101,31 @@ module Orgeefiles extend OptiFlagSet
     end
 
     def move_file(src_file, dest_dir)
-
       raise "Directory '#{dest_dir}' does not exist" unless File.directory?(File.dirname(dest_dir))
 
       Dir.mkdir(dest_dir) unless File.directory?(dest_dir)
 
-      #FileUtils.cp("#{src_file}", "#{dest_dir}/")
       system(Escape.shell_command(["/usr/bin/env", "rsync", "-ax", "#{src_file}", "#{dest_dir}/"]))
 
-      @log.info "Calculating checksum for #{src_file}"
-      src_checksum = self.calculate_checksum(src_file)
+      @log.debug "Calculating file size for #{src_file}"
+      src_file_size = self.get_file_size(src_file)
 
       dest_file = "#{dest_dir}/#{File.basename(src_file)}"
-      @log.info "Calculating checksum for #{dest_file}"
-      dest_checksum = self.calculate_checksum(dest_file)
+      @log.debug "Calculating file size for #{dest_file}"
+      dest_file_size = self.get_file_size(dest_file)
 
-      if dest_checksum == src_checksum
-        @log.info "Checksums match, removing #{src_file}"
+      if dest_file_size == src_file_size
+        @log.info "File sizes match, removing #{src_file}"
         File.delete("#{src_file}")
       else
-        raise "MD5's don't match for '#{src_file}' (src=[#{src_checksum}], dest=[#{dest_checksum}])"
+        raise "File sizes don't match for '#{src_file}' (src=[#{src_file_size}], dest=[#{dest_file_size}])"
       end
-
-      src_checksum = nil
-      dest_checksum = nil
-
     end
 
-    def calculate_checksum(file)
-      checksum = `md5sum "#{file}" | awk '{ print $1 }'`
-      checksum.strip!
-      @log.debug "Checksum for #{file} - #{checksum}"
-      return checksum
-    end
-
-    def read_file(file)
-      contents = ''
-      open(file, "r") do |io|
-        while (!io.eof)
-          readBuf = io.readpartial(1024)
-          contents << readBuf
-        end
-      end
-      return contents
+    def get_file_size(file)
+      size = File.open(file).stat.size
+      @log.debug "Size for #{file} - #{size}"
+      return size
     end
 
   end
