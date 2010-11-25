@@ -17,6 +17,7 @@ require 'escape'
 module Orgeefiles extend OptiFlagSet
 
   optional_switch_flag "forreal"
+  optional_switch_flag "dontdelete"
   optional_switch_flag "debug"
   optional_switch_flag "quiet"
   and_process!
@@ -115,8 +116,12 @@ module Orgeefiles extend OptiFlagSet
       dest_file_size = self.get_file_size(dest_file)
 
       if dest_file_size == src_file_size
-        @log.info "File sizes match, removing #{src_file}"
-        File.delete("#{src_file}")
+        if ! ARGV.flags.dontdelete
+          @log.info "File sizes match, removing #{src_file}"
+          File.delete("#{src_file}")
+        else
+          @log.info "File sizes match, but not removing #{src_file} (--dontdelete specified)"
+        end
       else
         raise "File sizes don't match for '#{src_file}' (src=[#{src_file_size}], dest=[#{dest_file_size}])"
       end
