@@ -1,18 +1,20 @@
 #!/usr/bin/env ruby
 
-# Author: Ash McKenzie (ash@ashmckenzie.org)
+# Author: Ash McKenzie (ash@greenworm.com.au)
 #
 # Simple Ruby script to move files from one location to another based
 # on a defined set of rules in config.yml.
 #
 # Look for NOTE: entries for things to change.
 
-require 'rubygems'
-require 'logger'
-require 'yaml'
-require 'fileutils'
-require 'optiflag'
-require 'escape'
+require "rubygems"
+require "bundler/setup"
+
+require "logger"
+require "yaml"
+require "fileutils"
+require "optiflag"
+require "escape"
 
 module Orgeefiles extend OptiFlagSet
 

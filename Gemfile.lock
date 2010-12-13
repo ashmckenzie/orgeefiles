@@ -1,0 +1,12 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    escape (0.0.4)
+    optiflag (0.7)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  escape
+  optiflag
