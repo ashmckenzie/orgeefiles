@@ -1,10 +1,13 @@
 source:
-  dir: "/tmp/source_dir"
-  regex: ^.+\.mp3$
-destination:
-  dir: "#{dir}"
+  dir: "/home/jdoe/Downloads"
+  regex: "^.+\.(mkv|avi)$"
+
+default_dest_dir: "#{dir}/Season #{m[1].to_i}/"
+
+dirs:
+  tv_shows: "/mnt/storage/Video/TV shows"
+
 mappings:
-  - pearl_jam:
-    label: "All Pearl Jam music"
-    regex: ^pearl\.jam.\+\.mp3$
-    dir: "/storage/Pearl Jam"
+  -
+    regex: \/?([^\/]+)\.s(\d\d)e\d\d
+    dest_dir: "#{@dirs['tv_shows']}/#{m[1].split('.').each.collect { |x| x.capitalize }.join(' ')}/Season #{m[2].to_i}/"

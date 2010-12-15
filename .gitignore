@@ -1,2 +1,3 @@
 config.yml
+copy_but_dont_delete.sh
 *.swp
