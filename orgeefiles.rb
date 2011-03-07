@@ -114,7 +114,7 @@ module Orgeefiles extend OptiFlagSet
       dest_file_size = self.get_file_size(dest_file)
       @log.debug "Calculated file size for #{dest_file} - #{dest_file_size}"
 
-      if dest_file_size === src_file_size
+      if dest_file_size == src_file_size
         if ! ARGV.flags.dontdelete
           @log.info "File sizes match, removing #{src_file}"
           File.delete("#{src_file}")
