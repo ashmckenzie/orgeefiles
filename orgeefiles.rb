@@ -15,6 +15,7 @@ require "yaml"
 require "fileutils"
 require "optiflag"
 require "escape"
+require 'net/http'
 
 module Orgeefiles extend OptiFlagSet
 
@@ -67,6 +68,7 @@ module Orgeefiles extend OptiFlagSet
     end
 
     def look_for_files_to_move
+      moved = 0
 
       @files.each do |src_file|
 
@@ -89,12 +91,17 @@ module Orgeefiles extend OptiFlagSet
             if ARGV.flags.forreal
               @log.info "Rsync'ing #{src_file} to #{dest_dir}"
               self.move_file(src_file, "#{dest_dir}/")
+              moved =+ 1
             else
               @log.info "Would have rsync'd #{src_file} to #{dest_dir}"
             end
 
           end
         end
+      end
+
+      if moved > 0
+        Net::HTTP.get URI.parse('http://imac-new.local:32400/library/sections/7/refresh?force=1')
       end
     end
 
