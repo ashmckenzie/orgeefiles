@@ -1,3 +1,5 @@
 source :rubygems
-gem "optiflag"
-gem "escape"
+
+gem 'optiflag'
+gem 'escape'
+gem 'pry'

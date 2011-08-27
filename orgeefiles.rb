@@ -9,12 +9,11 @@
 
 require "rubygems"
 require "bundler/setup"
+Bundler.require(:default)
 
 require "logger"
 require "yaml"
 require "fileutils"
-require "optiflag"
-require "escape"
 require 'net/http'
 
 module Orgeefiles extend OptiFlagSet
@@ -78,7 +77,7 @@ module Orgeefiles extend OptiFlagSet
 
           regex = Regexp.new(mapping['regex'], Regexp::IGNORECASE)
 
-          if m = regex.match(src_file)
+          if m = regex.match(File.basename(src_file))
 
             if mapping['dest_dir']
               dest_dir = eval '"' + mapping['dest_dir'] + '"'
