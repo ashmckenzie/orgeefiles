@@ -16,6 +16,8 @@ require "yaml"
 require "fileutils"
 require 'net/http'
 
+include Log4r
+
 module Orgeefiles extend OptiFlagSet
 
   optional_switch_flag "forreal"
@@ -27,14 +29,19 @@ module Orgeefiles extend OptiFlagSet
   class Orgeefiles
 
     def initialize
-      @log = Logger.new(STDOUT)
+
+      @log = Log4r::Logger.new ''
+
+      @log.outputters = [ 
+        Log4r::StdoutOutputter.new('', :formatter => Log4r::PatternFormatter.new(:pattern => "%d %5l: %m"))
+      ]
 
       if ARGV.flags.debug
-        @log.level = Logger::DEBUG
+        @log.level = DEBUG
       elsif ARGV.flags.quiet
-        @log.level = Logger::ERROR
+        @log.level = ERROR
       else
-        @log.level = Logger::INFO
+        @log.level = INFO
       end
 
       @config = YAML.load_file('config.yml')

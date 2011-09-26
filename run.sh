@@ -12,7 +12,7 @@ output=`./orgeefiles.rb --forreal | grep 'Rsync' | awk -F "Rsync'ing " '{ print 
 for f in ${output}
 do
   file=`basename ${f}`
-  growlnotify -s -m "Moved ${file}"
+  #growlnotify -s -m "Moved ${file}"
 done
 
 growlnotify -m "Done moving files!"

@@ -2,4 +2,8 @@ source :rubygems
 
 gem 'optiflag'
 gem 'escape'
-gem 'pry'
+gem 'log4r'
+
+group :development do
+  gem 'pry'
+end
