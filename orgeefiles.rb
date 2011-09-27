@@ -99,7 +99,7 @@ module Orgeefiles extend OptiFlagSet
               self.move_file(src_file, "#{dest_dir}/")
               moved =+ 1
             else
-              @log.info "Would have rsync'd #{src_file} to #{dest_dir}"
+              @log.info "Would have rsync'd #{File.basename(src_file)} to #{dest_dir}"
             end
 
           end
@@ -129,10 +129,10 @@ module Orgeefiles extend OptiFlagSet
 
       if dest_file_size == src_file_size
         if ! ARGV.flags.dontdelete
-          @log.info "File sizes match, removing #{src_file}"
+          @log.debug "File sizes match, removing #{src_file}"
           File.delete("#{src_file}")
         else
-          @log.info "File sizes match, but not removing #{src_file} (--dontdelete specified)"
+          @log.debug "File sizes match, but not removing #{src_file} (--dontdelete specified)"
         end
       else
         raise "File sizes don't match for '#{src_file}' (src=[#{src_file_size}], dest=[#{dest_file_size}])"
